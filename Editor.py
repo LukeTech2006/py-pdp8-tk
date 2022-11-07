@@ -23,19 +23,19 @@ from tkinter.messagebox import askquestion, showinfo, YES, WARNING
 class Editor(object):
 
     """
-    Finestra per l'editor di condice assembly
+    Fenster für den Assembly-Editor
     """
 
     def __init__(self, master, calcolatore):
         """
-        Inizializza i frame della finestra dell'Editor
+        Initialisiert Editor-Fensterrahmen
         """
         self.master = master
         self.CD = calcolatore
         # Codice Assembly
         self.codice = LabelFrame(
             self.master,
-            text="Codice Assembly",
+            text="Assembly-Code",
             relief=RIDGE,
             borderwidth=5,
             labelanchor="n",
@@ -50,92 +50,92 @@ class Editor(object):
 
     def create_widgets(self, menubar):
         """
-        Crea il layout del programma, finestra dell'Editor
+        Programmlayout erstellen, Editorfenster
         """
         # Menu
         self.filemenu = Menu(menubar, tearoff=0)
-        self.filemenu.add_command(label="Apri", command=self.aprifile)
-        self.filemenu.add_command(label="Salva", command=self.salvafile)
-        self.filemenu.add_command(label="Cancella", command=self.cancella)
+        self.filemenu.add_command(label="Öffnen", command=self.openFile)
+        self.filemenu.add_command(label="Speichern", command=self.saveFile)
+        self.filemenu.add_command(label="Abbrechen", command=self.deleteFile)
         self.filemenu.add_separator()
-        self.filemenu.add_command(label="Esci", command=self.exit)
-        menubar.add_cascade(label="Opzioni", menu=self.filemenu)
+        self.filemenu.add_command(label="Beenden", command=self.exit)
+        menubar.add_cascade(label="Optionen", menu=self.filemenu)
         self.master.config(menu=self.menubar)
 
         self.helpmenu = Menu(menubar, tearoff=0)
-        self.helpmenu.add_command(label="Informazioni", command=self.infor)
-        self.helpmenu.add_command(label="Legenda", command=self.leg)
-        self.helpmenu.add_command(label="Guida", command=self.guida)
-        menubar.add_cascade(label="Aiuto", menu=self.helpmenu)
+        self.helpmenu.add_command(label="Informationen", command=self.infor)
+        self.helpmenu.add_command(label="Legende", command=self.leg)
+        self.helpmenu.add_command(label="Leitfaden", command=self.guide)
+        menubar.add_cascade(label="Hilfe", menu=self.helpmenu)
 
         # Codice Assembly
-        self.Inserisci = Text(self.codice, width=50, height=30, wrap=WORD)
-        self.Inserisciscrollbar = Scrollbar(self.codice)
-        self.Inserisciscrollbar.config(command=self.Inserisci.yview)
-        self.Inserisci.config(yscrollcommand=self.Inserisciscrollbar.set)
-        self.Inserisciscrollbar.grid(row=0, column=1, sticky=N + S)
-        self.Inserisci.grid(row=0, column=0, sticky=W)
+        self.insertAssembly = Text(self.codice, width=50, height=30, wrap=WORD)
+        self.insertAssemblyScrollbar = Scrollbar(self.codice)
+        self.insertAssemblyScrollbar.config(command=self.insertAssembly.yview)
+        self.insertAssembly.config(yscrollcommand=self.insertAssemblyScrollbar.set)
+        self.insertAssemblyScrollbar.grid(row=0, column=1, sticky=N + S)
+        self.insertAssembly.grid(row=0, column=0, sticky=W)
 
     def exit(self):
         """
-        Esce dal programma
+        Programm beenden
         """
-        if askquestion("Exit", "Sicuro di voler uscire?") == YES:
+        if askquestion("Beenden?", "Möchten Sie das Programm wirklich beenden?") == YES:
             self.master.quit()
             self.master.destroy()
         else:
             showinfo(
-                "Suggerimento", """Forse e' meglio fare una pausa!""", icon=WARNING
+                "Tipp", """Vielleicht ist es besser, eine Pause zu machen!""", icon=WARNING
             )
 
-    def aprifile(self):
+    def openFile(self):
         """
-        Apre un file assembly e lo mostra a video per essere modificato
+        Assembly-Datei zur Bearbeitung öffnen
         """
         path = askopenfilename(
-            title="Apri codice assembly",
-            filetypes=[("Assembly", ".asm"), ("Testo", ".txt"), ("All", "*")],
+            title="Assembly-Datei öffnen",
+            filetypes=[("Assembly-Dateien", ".asm"), ("Textdateien", ".txt"), ("Alle Dateien", "*")],
         )
         if path != "":
             with open(path, "r") as cur_file:
-                self.Inserisci.delete(1.0, END)
-                self.Inserisci.insert(INSERT, cur_file.read())
+                self.insertAssembly.delete(1.0, END)
+                self.insertAssembly.insert(INSERT, cur_file.read())
 
-    def cancella(self):
+    def deleteFile(self):
         """
-        Cancella l'attuale file assembly caricato
+        Aktuelles Programm löschen
         """
         if (
-            askquestion("Cancella", "Si vuole cancellare tutto il codice assembly?")
+            askquestion("Löschen?", "Möchten Sie das aktuelle Programm unwiederbringlich löschen?")
             == YES
         ):
-            self.Inserisci.delete(1.0, END)
+            self.insertAssembly.delete(1.0, END)
 
-    def salvafile(self):
+    def saveFile(self):
         """
-        Salva il file assembly su cui si sta lavorando
+        Aktuelles Programm speichern
         """
-        contenuto = self.Inserisci.get(1.0, END)
-        contenuto = contenuto.encode("ascii", "ignore")
+        programContent = self.insertAssembly.get(1.0, END)
+        programContent = programContent.encode("ascii", "ignore")
         path = asksaveasfilename(
-            title="Salva codice assembly",
-            defaultextension=[("Assembly", ".asm"), ("Testo", ".txt"), ("All", "*")],
-            filetypes=[("Assembly", ".asm"), ("Testo", ".txt"), ("All", "*")],
+            title="Speichern unter...",
+            defaultextension=[("Assembly-Datei", ".asm"), ("Textdatei", ".txt"), ("Alle Dateien", "*")],
+            filetypes=[("Assembly-Datei", ".asm"), ("Textdatei", ".txt"), ("Alle Dateien", "*")],
         )
 
         if path != "":
             file = open(path, "w")
-            file.write(str(contenuto))
+            file.write(str(programContent))
             file.close()
 
     @staticmethod
     def infor():
         """
-        Visualizza le informazioni riguardante il programma
+        Lizenzinfos anzeigen
         """
-        nome = """pdp8 emulator"""
-        stringa = """
-    Pdp8 Emulator
+        infoName = """PDP-8 Emulator"""
+        infoString = """
+    PDP-8 Emulator
     
     °°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°
     Version = 1.6.2
@@ -174,50 +174,49 @@ class Editor(object):
 
     Collaborators : Walter Valentini
     """
-        showinfo(nome, stringa)
+        showinfo(infoName, infoString)
 
     @staticmethod
     def leg():
         """
-        Visualizza le informazioni riguardanti colori
+        Informationen in Farbe
         """
-        nome = """pdp8 Legenda"""
-        stringa = """
+        infoName = """Über PDP-8"""
+        infoString = """
         Rosso = indirizzo puntato da PC
         Giallo = indirizzo puntato da MAR
         Verde = ultima istruzione eseguita
         """
-        showinfo(nome, stringa)
+        showinfo(infoName, infoString)
 
     @staticmethod
-    def guida():
+    def guide():
         """
-        Piccola guida
+        Kleiner Leitfaden
         """
-        nome = """pdp8 Guida"""
-        stringa = """
-    LOAD = Carica il assembly nella memoria del Calcolatore
-            Didattico (CD).
+        infoName = """PDP-8 Leitfaden"""
+        infoString = """
+    LOAD = Assemply Programm in den Computer laden.
     
-    STEP = Avanza del numero di step indicato (di default 1).
-            Uno step equivale all'esecuzione di una singola istruzione.
+    STEP = Weiterschalten um die angegebene Anzahl von Schritten (Standardmäßig 1).
+            Ein Schritt ist gleichbedeutend mit der Ausführung einer einzigen Anweisung.
     
-    mini STEP = Esegue un singolo ciclo in base alle variabili
-            F ed R dell'unità di controllo.
+    mini STEP = Führt einen einzelnen Zyklus auf Grundlage der
+            F- und R-Variablen des Computers aus.
             
-    micro STEP = Esegue ogni singola microistruzione.
+    micro STEP = Führt eine Mikroinstruktion aus.
             
-    Set n STEP = Setta il numero di step.
+    Set n STEP = Schrittzahl einstellen.
         
-    Set Delay = Setta il tempo di aggiornamento del CD.
+    Set Delay = Ausführungsverzögerung einstellen.
         
-    START = Avvia il CD, ma non l'esecuzione del codice. Per
-            eseguire il codice, utilizzare step o esegui una
-            volta avviata la macchina.
+    START = Das System startet, aber nicht die Ausführung des Codes. Um
+            den Code auszuführen, STEP verwenden oder einmal ausführen
+            sobald die Maschine gestartet ist.
             
-    RESET = Resetta il CD allo stato iniziale.
+    RESET = Setzt das System in den Ausgangszustand zurück.
         
-    STOP = Ferma il CD e quindi anche l'esecuzione del codice.
+    STOP = Stoppt System & ausführung des aktuellen Programms.
     
     BREAK = Aggiunge o toglie un break alla cella indicata
             in esadecimale.
@@ -228,4 +227,4 @@ class Editor(object):
     ESEGUI = Esegue il codice fino all'istruzione HLT, che
             arresta la macchina.
         """
-        showinfo(nome, stringa)
+        showinfo(infoName, infoString)
